@@ -1,0 +1,113 @@
+using System;
+using System.IO;
+using System.Threading;
+
+namespace MultiThreading
+{
+    class Program
+    {
+
+        public string path1 = @"C:\Users\csyeo\Desktop\김정현 프로 과제\과제1\TARGET1";
+        public string path2 = @"C:\Users\csyeo\Desktop\김정현 프로 과제\과제1\TARGET2";
+        public int count1;
+        public int count2;
+        public long elapse1;
+        public long elapse2;
+
+        // 멀티스레딩
+        void Main()
+        {
+            {
+                //Creating the Thread   
+                Thread ThreadObject1 = new Thread(Counting1);
+                Thread ThreadObject2 = new Thread(Counting2);
+                Thread ThreadObject3 = new Thread(Creating);
+                Thread ThreadObject4 = new Thread(Printing1);
+                Thread ThreadObject5 = new Thread(Printing2);
+
+                //Starting the Thread  
+                ThreadObject1.Start();
+                ThreadObject2.Start();
+                ThreadObject3.Start();
+                ThreadObject4.Start();
+                ThreadObject5.Start();
+            }
+        }
+
+        // 폴더1 파일갯수, 시간측정 메서드
+        public (int,long) Counting1()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Thread.Sleep(1000);
+
+                var watch1 = new System.Diagnostics.Stopwatch();
+                watch1.Start();
+                                
+                DirectoryInfo dir1 = new DirectoryInfo(path1);
+                count1 = dir1.GetFiles().Length;
+
+                watch1.Stop();
+                elapse1 = watch1.ElapsedMilliseconds;
+
+                return (count1, elapse1);
+            }
+        }
+
+        // 폴더2 파일갯수, 시간측정 메서드
+        public (int, long) Counting2()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Thread.Sleep(1000);
+
+                var watch2 = new System.Diagnostics.Stopwatch();
+                watch2.Start();
+
+                DirectoryInfo dir2 = new DirectoryInfo(path2);
+                count2 = dir2.GetFiles().Length;
+
+                watch2.Stop();
+                elapse2 = watch2.ElapsedMilliseconds;
+
+                return (count2, elapse2);
+            }
+        }
+
+
+        // 폴더1,2  파일생성 메서드
+        public void Creating()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                Thread.Sleep(1000);
+                string number = Convert.ToString(i);
+
+                string filename1 = Path.Combine(path1, number + ".txt");
+                string filename2 = Path.Combine(path1, number + ".txt");
+
+                File.Create(filename1);
+                File.Create(filename2);
+            }
+        }
+
+        // 폴더1 결과값 출력 메서드
+        public void Printing1()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10000);
+                Console.WriteLine("1번 폴더 / 파일개수:{0}개 / 소요시간:{1}ms ", count1, elapse1);
+            }
+        }
+        // 폴더2 결과값 출력 메서드
+        public void Printing2()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Thread.Sleep(10000);
+                Console.WriteLine("2번 폴더 / 파일개수:{0}개 / 소요시간:{1}ms ", count2, elapse2);
+            }
+        }
+    }
+}
